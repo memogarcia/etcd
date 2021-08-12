@@ -1,0 +1,82 @@
+project: default
+source:
+  repoURL: 'http://nexus-service.nexus.svc.cluster.local/repository/helm-charts/'
+  targetRevision: 6.3.3
+  helm:
+    values: |
+      global:
+        imageRegistry: "cdk-docker-registry.helionit.io:8443"
+        storageClass: "csi-rbd-sc"
+
+      image:
+        registry: cdk-docker-registry.helionit.io:8443
+        repository: bitnami/etcd
+        tag: 3.5.0-debian-10-r38
+        pullPolicy: IfNotPresent
+
+      auth:
+        rbac:
+          enabled: true
+          allowNoneAuthentication: true
+          # The root user, which has full access to etcd, must be created before activating authentication
+          # rootPassword: CHANGEME
+          existingSecret: postgres-operator-etcd-root-password
+        client:
+          secureTransport: false
+          useAutoTLS: false
+          existingSecret: ""
+          enableAuthentication: false
+          certFilename: cert.pem
+          certKeyFilename: key.pem
+          caFilename: ""
+        peer:
+          secureTransport: false
+          useAutoTLS: false
+          existingSecret: ""
+          enableAuthentication: false
+          certFilename: cert.pem
+          certKeyFilename: key.pem
+          caFilename: ""
+
+      replicaCount: 3
+      updateStrategy:
+        type: RollingUpdate
+      podManagementPolicy: Parallel
+
+      initialClusterState: "new"
+
+      persistence:
+        enabled: true
+        storageClass: csi-rbd-sc
+        accessModes:
+          - ReadWriteOnce
+        size: 8Gi
+
+      metrics:
+        enabled: true
+        podAnnotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "2379"
+        podMonitor:
+          enabled: true
+          namespace: monitoring
+
+      startFromSnapshot:
+        enabled: false
+
+      disasterRecovery:
+        enabled: true
+        cronjob:
+          schedule: "*/30 * * * *"
+          historyLimit: 1
+          snapshotHistoryLimit: 1
+        pvc:
+          size: 2Gi
+          storageClassName: csi-rbd-sc
+  chart: etcd
+destination:
+  server: 'https://kubernetes.default.svc'
+  namespace: etcd-argo
+syncPolicy:
+  automated:
+    selfHeal: true

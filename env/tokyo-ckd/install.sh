@@ -4,5 +4,9 @@ kubectl -n postgres-operator create secret generic postgres-operator-etcd-root-p
 
 helm repo add bitnami https://charts.bitnami.com/bitnami
 helm repo update
+helm install etcd bitnami/etcd
 
-helm repo pull 
+helm pull bitnami/etcd
+
+# ok, I need to set the helm repo list url into argocd for the charts
+# do I need nexus for this?
