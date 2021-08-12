@@ -1,0 +1,11 @@
+apiVersion: v2
+name: uidai-etcd
+description: A Helm chart for ETCD
+type: application
+version: 0.1.0
+appVersion: "3.5"
+
+dependencies:
+- name: etcd
+  version: 6.3.3
+  repository: http://nexus-service.nexus.svc.cluster.local/repository/helm-charts/
