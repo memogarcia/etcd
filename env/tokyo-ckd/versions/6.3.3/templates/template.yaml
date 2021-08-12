@@ -3,27 +3,27 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: RELEASE-NAME-etcd
-  namespace: default
+  name: etcd
+  namespace: etcd-argo
   labels:
     app.kubernetes.io/name: etcd
     helm.sh/chart: etcd-6.3.3
-    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/instance: etcd
     app.kubernetes.io/managed-by: Helm
 type: Opaque
 data:
-  etcd-root-password: "MXZ2V0Jqc2ZlTQ=="
+  etcd-root-password: "ZG5FckFnZkR6cw=="
 ---
 # Source: etcd/templates/svc-headless.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: RELEASE-NAME-etcd-headless
-  namespace: default
+  name: etcd-headless
+  namespace: etcd-argo
   labels:
     app.kubernetes.io/name: etcd
     helm.sh/chart: etcd-6.3.3
-    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/instance: etcd
     app.kubernetes.io/managed-by: Helm
   annotations:
     service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
@@ -40,18 +40,18 @@ spec:
       targetPort: peer
   selector:
     app.kubernetes.io/name: etcd
-    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/instance: etcd
 ---
 # Source: etcd/templates/svc.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: RELEASE-NAME-etcd
-  namespace: default
+  name: etcd
+  namespace: etcd-argo
   labels:
     app.kubernetes.io/name: etcd
     helm.sh/chart: etcd-6.3.3
-    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/instance: etcd
     app.kubernetes.io/managed-by: Helm
   annotations:
 spec:
@@ -67,26 +67,26 @@ spec:
       nodePort: null
   selector:
     app.kubernetes.io/name: etcd
-    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/instance: etcd
 ---
 # Source: etcd/templates/statefulset.yaml
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: RELEASE-NAME-etcd
-  namespace: default
+  name: etcd
+  namespace: etcd-argo
   labels:
     app.kubernetes.io/name: etcd
     helm.sh/chart: etcd-6.3.3
-    app.kubernetes.io/instance: RELEASE-NAME
+    app.kubernetes.io/instance: etcd
     app.kubernetes.io/managed-by: Helm
 spec:
   replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: etcd
-      app.kubernetes.io/instance: RELEASE-NAME
-  serviceName: RELEASE-NAME-etcd-headless
+      app.kubernetes.io/instance: etcd
+  serviceName: etcd-headless
   podManagementPolicy: Parallel
   updateStrategy:
     type: RollingUpdate
@@ -95,7 +95,7 @@ spec:
       labels:
         app.kubernetes.io/name: etcd
         helm.sh/chart: etcd-6.3.3
-        app.kubernetes.io/instance: RELEASE-NAME
+        app.kubernetes.io/instance: etcd
         app.kubernetes.io/managed-by: Helm
       annotations:
     spec:
@@ -109,7 +109,7 @@ spec:
                 labelSelector:
                   matchLabels:
                     app.kubernetes.io/name: etcd
-                    app.kubernetes.io/instance: RELEASE-NAME
+                    app.kubernetes.io/instance: etcd
                 namespaces:
                   - "default"
                 topologyKey: kubernetes.io/hostname
@@ -156,14 +156,14 @@ spec:
             - name: ETCD_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: RELEASE-NAME-etcd
+                  name: etcd
                   key: etcd-root-password
             - name: ETCD_ADVERTISE_CLIENT_URLS
-              value: "http://$(MY_POD_NAME).RELEASE-NAME-etcd-headless.default.svc.cluster.local:2379"
+              value: "http://$(MY_POD_NAME).etcd-headless.default.svc.cluster.local:2379"
             - name: ETCD_LISTEN_CLIENT_URLS
               value: "http://0.0.0.0:2379"
             - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
-              value: "http://$(MY_POD_NAME).RELEASE-NAME-etcd-headless.default.svc.cluster.local:2380"
+              value: "http://$(MY_POD_NAME).etcd-headless.default.svc.cluster.local:2380"
             - name: ETCD_LISTEN_PEER_URLS
               value: "http://0.0.0.0:2380"
           envFrom:
