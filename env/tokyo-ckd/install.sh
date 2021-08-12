@@ -10,3 +10,5 @@ helm pull bitnami/etcd
 
 # ok, I need to set the helm repo list url into argocd for the charts
 # do I need nexus for this?
+
+helm template etcd bitnami/etcd  -f env/tokyo-ckd/versions/6.3.3/values.yaml
