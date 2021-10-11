@@ -15,4 +15,9 @@ helm pull bitnami/etcd
 
 helm template etcd bitnami/etcd  -f env/tokyo-ckd/versions/6.3.3/values.yaml
 
-helm install etcd bitnami/etcd -n etcd-argo -f values.yml
+# helm install etcd bitnami/etcd -n etcd-argo -f values.yml
+
+# http://gitlab.ckd.helionit.io/root/etcd.git
+# env/tokyo-ckd/chart/
+
+# https://kubernetes.default.svc

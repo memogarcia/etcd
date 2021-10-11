@@ -12,25 +12,23 @@ auth:
   rbac:
     enabled: true
     allowNoneAuthentication: true
-    # The root user, which has full access to etcd, must be created before activating authentication
-    # rootPassword: CHANGEME
     existingSecret: postgres-operator-etcd-root-password
   client:
-    secureTransport: false
-    useAutoTLS: false
-    existingSecret: ""
-    enableAuthentication: false
+    secureTransport: true
+    useAutoTLS: true
+    existingSecret: postgres-operator-etcd-user-password
+    enableAuthentication: true
     certFilename: cert.pem
     certKeyFilename: key.pem
     caFilename: ""
   peer:
-    secureTransport: false
-    useAutoTLS: false
-    existingSecret: ""
-    enableAuthentication: false
+    secureTransport: true
+    useAutoTLS: true
+    existingSecret: postgres-operator-etcd-user-password
+    enableAuthentication: true
     certFilename: cert.pem
     certKeyFilename: key.pem
-    caFilename: ""
+    caFilename: "" 
 
 replicaCount: 3
 updateStrategy:
@@ -59,6 +57,7 @@ startFromSnapshot:
   enabled: false
 
 disasterRecovery:
+  # disabled due to PVC ReadWriteMany required and not supported in csi-rbd-sc
   enabled: false
   cronjob:
     schedule: "*/30 * * * *"
